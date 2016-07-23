@@ -31,7 +31,7 @@ class MessagesController < ApplicationController
     end
     ChatRoom.find(params[:chat_room_id]).chat_rooms_users.each do |chat_room_user|
       if current_user != chat_room_user.user
-        chat_room_user.update(unread: chat_room_user.unread.to_i + 1)
+        chat_room_user.update(unread: chat_room_user.unread + 1)
       end
     end
     if session[:user_ids]
@@ -46,7 +46,7 @@ class MessagesController < ApplicationController
     unread = 0
     chat_room_unread = 0
     ChatRoom.find(params[:chat_room_id]).chat_rooms_users.each do |chat_room_user|
-      unread += chat_room_user.unread.to_i
+      unread += chat_room_user.unread
       chat_room_unread = chat_room_user.unread.to_i if chat_room_user.chat_room == ChatRoom.find(params[:chat_room_id])
     end
     ActionCable.server.broadcast 'messages',

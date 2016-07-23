@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20160723115916) do
     t.uuid    "chat_room_id"
     t.uuid    "user_id"
     t.boolean "deleted",      default: false
-    t.integer "unread"
+    t.integer "unread",       default: 0
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
