@@ -27,12 +27,16 @@ class MessagesController < ApplicationController
     message = ChatRoom.find(params[:chat_room_id]).messages.build(content: params[:content])
     message.user = current_user
     if message.save
-      session[:user_ids].each do |user_id|
-        ChatRoom.find(params[:chat_room_id]).users << User.find(user_id)
+      if session[:user_ids]
+        session[:user_ids].each do |user_id|
+          ChatRoom.find(params[:chat_room_id]).users << User.find(user_id)
+        end
+        session[:user_ids] = nil
       end
+
       ActionCable.server.broadcast 'messages',
-          message: message.content,
-          user: message.user.first_name
+                                   message: message.content,
+                                   user: message.user.first_name
     end
     head :ok
   end
@@ -62,13 +66,13 @@ class MessagesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_message
-      @message = Message.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_message
+    @message = Message.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def message_params
-      params.require(:message).permit(:content)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def message_params
+    params.require(:message).permit(:content)
+  end
 end
