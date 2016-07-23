@@ -10,7 +10,9 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms/1
   # GET /chat_rooms/1.json
   def show
-    @chat_room.chat_rooms_users.where(user_id: current_user.id).take.update(unread: 0)
+    if chat_rooms_user = @chat_room.chat_rooms_users.where(user_id: current_user.id).take
+      chat_rooms_user.update(unread: 0)
+    end
   end
 
   # GET /chat_rooms/new
