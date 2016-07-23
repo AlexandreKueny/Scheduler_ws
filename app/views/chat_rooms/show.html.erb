@@ -1,0 +1,11 @@
+<% chat_room_header @chat_room.name %>
+
+<div class="infos" data-id="<%= @chat_room.id %>">id</div>
+
+<div id="messages">
+  <% @chat_room.messages.each do |message| %>
+      <p><%= "#{message.user.first_name} / #{message.content}" %></p>
+  <% end %>
+</div>
+
+<input type="text" id="chat_input" placeholder="Message">

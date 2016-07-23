@@ -1,0 +1,5 @@
+<% header "Search results" %>
+
+<% @users.each do |user| %>
+    <p><%= link_to "#{user.first_name} #{user.last_name}", '/users/' + user.id %></p>
+<% end %>

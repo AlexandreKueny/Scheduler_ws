@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DeviseDemo</title>
+  <%= action_cable_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+<div id="wrap">
+  <%= render 'pages/topbar' %>
+
+  <div id="alert">
+    <div class="container">
+      <% flash.each do |key, value| %>
+          <div class="alert alert-<%= key %>">
+            <%= value %>
+          </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div id="top">
+    <%= yield :top_content %>
+  </div>
+
+  <div id="header">
+    <div class="container">
+      <%= yield :header %>
+    </div>
+  </div>
+
+  <div id="body">
+    <div class="container">
+      <%= yield %>
+    </div>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="container">
+    <p class="text-muted">Created by Alexandre Kueny</p>
+  </div>
+</div>
+
+</body>
+</html>

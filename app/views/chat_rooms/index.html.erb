@@ -1,0 +1,23 @@
+<% header "Messages!" %>
+
+<table class="table table-striped table-condensed table-hover">
+  <thead>
+  <tr>
+    <th>Participants</th>
+    <th>Nom</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @chat_rooms.each do |chat_room| %>
+      <tr class="clickable-row" data-href="<%= user_chat_room_path(id: chat_room.id) %>">
+        <td>
+          <% users = chat_room.users %>
+          <% users.each do |user| %>
+              <%= user.first_name %>
+          <% end %>
+        </td>
+        <td><%= chat_room.name %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
