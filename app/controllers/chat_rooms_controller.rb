@@ -4,12 +4,13 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms
   # GET /chat_rooms.json
   def index
-    @chat_rooms = current_user.chat_rooms.order(updated_at: :desc)
+    @chat_rooms_users = current_user.chat_rooms_users.current
   end
 
   # GET /chat_rooms/1
   # GET /chat_rooms/1.json
   def show
+    @chat_room.chat_rooms_users.where(user_id: current_user.id).take.update(unread: 0)
   end
 
   # GET /chat_rooms/new

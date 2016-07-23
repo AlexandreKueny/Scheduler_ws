@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160720201721) do
+ActiveRecord::Schema.define(version: 20160723115916) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,8 +23,10 @@ ActiveRecord::Schema.define(version: 20160720201721) do
   end
 
   create_table "chat_rooms_users", force: :cascade do |t|
-    t.uuid "chat_room_id"
-    t.uuid "user_id"
+    t.uuid    "chat_room_id"
+    t.uuid    "user_id"
+    t.boolean "deleted",      default: false
+    t.integer "unread"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

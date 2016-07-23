@@ -1,7 +1,8 @@
 class User < ApplicationRecord
 
   has_many :messages
-  has_and_belongs_to_many :chat_rooms
+  has_many :chat_rooms_users
+  has_many :chat_rooms, through: :chat_rooms_users
 
   scope :searchable, -> { where('searchable IS true') }
 

@@ -36,6 +36,11 @@
                 <li>
                   <%= link_to user_chat_rooms_path current_user do %>
                       <span>Chat</span>
+                      <% unread = 0 %>
+                      <% current_user.chat_rooms_users.each do |chat_room_user| %>
+                        <% unread += chat_room_user.unread.to_i %>
+                      <% end %>
+                      <span class="badge" id="unread_badge"><%= unread > 0 ? unread : nil %></span>
                       <span class="glyphicon glyphicon-envelope pull-right"></span>
                   <% end %>
                 </li>

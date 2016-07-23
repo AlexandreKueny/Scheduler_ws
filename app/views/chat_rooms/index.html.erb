@@ -8,12 +8,15 @@
   </tr>
   </thead>
   <tbody>
-  <% @chat_rooms.each do |chat_room| %>
-      <tr class="clickable-row" data-href="<%= user_chat_room_path(id: chat_room.id) %>">
+  <% @chat_rooms_users.each do |chat_room_user| %>
+      <% chat_room = chat_room_user.chat_room %>
+      <% unread_msg = chat_room_user.unread %>
+      <tr class="clickable-row <%= unread_msg > 0 ? 'success' : nil %>" data-href="<%= user_chat_room_path(id: chat_room.id) %>" id="<%= chat_room.id %>">
         <td>
+          <span class="badge"><%= unread_msg > 0 ? unread_msg : nil %></span>
           <% users = chat_room.users %>
           <% users.each do |user| %>
-              <%= user.first_name %>
+              <%= user.first_name if user != current_user %>
           <% end %>
         </td>
         <td><%= chat_room.name %></td>
