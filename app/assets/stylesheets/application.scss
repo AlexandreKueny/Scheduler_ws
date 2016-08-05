@@ -2,6 +2,7 @@
 @import "bootstrap";
 @import 'bootstrap/theme';
 @import "jquery-ui";
+@import "chat_rooms";
 
 .alert-alert {
   @extend .alert-warning;
@@ -87,11 +88,11 @@ html, body {
 }
 
 #header {
-  //margin-top: -30px;
+  margin-top: -50px;
 }
 
 #body {
-  padding-bottom: 50px;
+  padding-bottom: 30px;
 }
 
 #footer {

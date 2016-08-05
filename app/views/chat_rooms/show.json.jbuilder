@@ -1,1 +1,0 @@
-json.url @response[:url]

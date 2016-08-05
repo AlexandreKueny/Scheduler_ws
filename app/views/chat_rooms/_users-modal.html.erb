@@ -1,0 +1,18 @@
+<div id="users-modal" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Users</div>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <%= render partial: 'user-modal', collection: users, as: :user %>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" id="dismiss-modal">Cancel</button>
+        <button class="btn btn-success" id="validate-modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>

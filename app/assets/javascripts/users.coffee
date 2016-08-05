@@ -11,9 +11,3 @@ $ ->
   .keypress (event) ->
     if event.which == 13
       window.location.href = '/users?search=' + $(this).val()
-
-  $('.twitter-typeahead').on('mouseenter', '.tt-suggestion', (e) ->
-    $('.tt-cursor', $(this).closest('.tt-menu')).removeClass 'tt-cursor'
-    $(this).addClass 'tt-cursor'
-  ).on 'mouseleave', '.tt-menu', (e) ->
-    $('.tt-cursor', $(this).closest('.tt-menu')).removeClas

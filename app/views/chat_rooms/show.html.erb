@@ -1,11 +1,27 @@
-<% chat_room_header @chat_room.name %>
+<div class='page-header'>
+  <ul class="list-inline">
+    <li>
+      <h1 class='edit'><%= @chat_room.name %></h1>
+    </li>
+    <li>
+      <button class="btn" id="users-btn" data-toggle="modal" data-target="#users-modal">Users</button>
+    </li>
+  </ul>
 
-<div class="infos" data-id="<%= @chat_room.id %>">id</div>
+  <%= render partial: 'users-modal', locals: {users: @chat_room.users} %>
 
-<div id="messages">
-  <% @chat_room.messages.each do |message| %>
-      <p><%= "#{message.user.first_name} / #{message.content}" %></p>
-  <% end %>
 </div>
 
-<input type="text" id="chat_input" placeholder="Message">
+<div class="col-md-10 col-md-offset-1">
+
+  <div class="panel panel-default" id="chat">
+
+    <div id="messages" class="panel-body">
+      <%= render partial: 'messages/message', collection: @chat_room.messages %>
+    </div>
+
+  </div>
+
+  <%= render partial: 'messages/message_form', locals: {message: @message, chat_room: @chat_room} %>
+
+</div>

@@ -1,26 +1,17 @@
 <% header "Messages!" %>
 
-<table class="table table-striped table-condensed table-hover">
-  <thead>
-  <tr>
-    <th>Participants</th>
-    <th>Nom</th>
-  </tr>
-  </thead>
-  <tbody>
+<div class="list-group">
   <% @chat_rooms_users.each do |chat_room_user| %>
       <% chat_room = chat_room_user.chat_room %>
-      <% unread_msg = chat_room_user.unread %>
-      <tr class="clickable-row <%= unread_msg > 0 ? 'success' : nil %>" data-href="<%= user_chat_room_path(id: chat_room.id) %>" id="<%= chat_room.id %>">
-        <td>
-          <span class="badge"><%= unread_msg > 0 ? unread_msg : nil %></span>
-          <% users = chat_room.users %>
-          <% users.each do |user| %>
-              <%= user.first_name if user != current_user %>
+      <% unread = chat_room_user.unread %>
+      <a class="list-group-item <%= unread > 0 ? 'list-group-item-success' : nil %>" id="<%= chat_room.id %>" href="<%= user_chat_room_path(current_user, chat_room) %>">
+        <span class="badge"><%= unread > 0 ? unread : nil %></span>
+        <h4 class="list-group-item-heading"><%= chat_room.name %></h4>
+        <p class="list-group-item-text">
+          <% chat_room.users.each do |user| %>
+            <%= user.first_name + ' ' if user != current_user %>
           <% end %>
-        </td>
-        <td><%= chat_room.name %></td>
-      </tr>
+        </p>
+      </a>
   <% end %>
-  </tbody>
-</table>
+</div>

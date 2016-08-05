@@ -1,2 +1,2 @@
 <%= @user.first_name %>
-<button class="btn" id="start-chat-btn">Chat</button>
+<a class="btn btn-default" href="<%= new_user_chat_room_path(@user) %>">Chat</a>

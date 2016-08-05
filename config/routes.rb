@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root to: 'pages#index'
 
-  devise_for :users
+  devise_for :users, :controllers => { :sessions => 'sessions'}
 
   resources :users do
     resources :chat_rooms do

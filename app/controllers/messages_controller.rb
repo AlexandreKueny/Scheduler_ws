@@ -1,10 +1,11 @@
 class MessagesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_message, only: [:show, :edit, :update, :destroy]
 
   # GET /messages
   # GET /messages.json
   def index
-    @messages = Message.all
+    @message = ChatRoom.find(params[:chat_room_id]).messages.order(created_at: :desc).take
   end
 
   # GET /messages/1
@@ -24,37 +25,34 @@ class MessagesController < ApplicationController
   # POST /messages
   # POST /messages.json
   def create
-    message = ChatRoom.find(params[:chat_room_id]).messages.build(content: params[:content])
+    chat_room = ChatRoom.find params[:chat_room_id]
+    message = chat_room.messages.build(content: params[:message][:content])
     message.user = current_user
-    ChatRoom.find(params[:chat_room_id]).chat_rooms_users.each do |chat_room_user|
+    chat_room.chat_rooms_users.each do |chat_room_user|
       chat_room_user.update(deleted: false)
     end
-    ChatRoom.find(params[:chat_room_id]).chat_rooms_users.each do |chat_room_user|
+    chat_room.chat_rooms_users.each do |chat_room_user|
       if current_user != chat_room_user.user
         chat_room_user.update(unread: chat_room_user.unread + 1)
       end
     end
-    if session[:user_ids]
-      if ChatRoom.find(params[:chat_room_id]).users.count < session[:user_ids].count
-        session[:user_ids].each do |user_id|
-          ChatRoom.find(params[:chat_room_id]).users << User.find(user_id)
-        end
-        session[:user_ids] = nil
-      end
-    end
     message.save
+    chat_room.update(active: true)
     unread = 0
     chat_room_unread = 0
-    ChatRoom.find(params[:chat_room_id]).chat_rooms_users.each do |chat_room_user|
+    chat_room.chat_rooms_users.each do |chat_room_user|
       unread += chat_room_user.unread
-      chat_room_unread = chat_room_user.unread.to_i if chat_room_user.chat_room == ChatRoom.find(params[:chat_room_id])
+      chat_room_unread = chat_room_user.unread.to_i if chat_room_user.chat_room == chat_room
+    end
+    users = []
+    chat_room.users.each do |user|
+      users << user.id
     end
     ActionCable.server.broadcast 'messages',
-                                 message: message.content,
-                                 user: message.user.first_name,
-                                 unread: unread,
+                                 users: users,
                                  chat_room_id: params[:chat_room_id],
-                                 chat_room_unread: chat_room_unread
+                                 chat_room_unread: chat_room_unread,
+                                 unread: unread
     head :ok
   end
 
@@ -86,6 +84,12 @@ class MessagesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_message
     @message = Message.find(params[:id])
+  end
+
+  def set_last_date
+    @last_date = Date.today
+    @date = Date.today
+    @first = true
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

@@ -12,9 +12,4 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
-  def search
-    @users = User.searchable
-                 .where('first_name ~* ? or last_name ~* ?', params[:search], params[:search])
-  end
-
 end

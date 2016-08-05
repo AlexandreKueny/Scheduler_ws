@@ -1,6 +1,6 @@
 jQuery ->
-  $('.clickable-row').click ->
-    window.document.location = $(this).data('href')
+
+  $('#messages')[0].scrollTop = $('#messages')[0].scrollHeight
 
   $('.edit').editable ((value, settings) ->
     $.ajax
@@ -10,14 +10,39 @@ jQuery ->
     return value
   )
 
-  $('#chat_input').keypress (e) ->
+  removed = []
+  hidden = []
+
+  $('#dismiss-modal').click ->
+    $('#users-modal').modal('hide')
+    $.each hidden, (i, e) ->
+      e.show()
+    hidden = []
+    removed = []
+
+  $('#validate-modal').click ->
+    $.ajax
+      type: 'patch'
+      url: window.document.location.pathname
+      data: {removed: removed.toString()}
+      dataType: 'json'
+    $('#users-modal').modal('hide')
+
+
+  $('.remove-user').on 'click', ->
+    elem = $(this).parent()
+    hidden.push elem
+    removed.push elem.data('id')
+    elem.hide()
+    console.log removed
+
+  $('textarea#message_content').keypress (e) ->
     if e.which == 13
-      $.ajax
-        url: window.document.location + '/messages?chat_room_id=' + chat_id() + '&content=' + $('#chat_input').val()
-        type: 'post'
-        async: true
-      e.target.value = ''
-      
+      if not e.shiftKey
+        $('[data-textarea="message"]').val($('[data-textarea="message"]').val().split('\n').join('<br>'))
+        $('[data-send="message"]').click()
+        $('[data-textarea="message"]').val('')
+
   $('#start-chat-btn').click ->
     $.ajax
       url: window.document.location + '/chat_rooms'
@@ -26,9 +51,3 @@ jQuery ->
       success: (data) ->
         console.log data
         window.location = data.url
-#        document.open();
-#        document.write(data)
-#        document.close();
-
-  chat_id = ->
-    $('.infos').data('id')

@@ -1,23 +1,38 @@
 class ChatRoomsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_chat_room, only: [:show, :edit, :update, :destroy]
 
   # GET /chat_rooms
   # GET /chat_rooms.json
   def index
-    @chat_rooms_users = current_user.chat_rooms_users.current
+    @chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.joins(:chat_room).where(chat_rooms: {active: true})
+    @chat_rooms_users.each do |chat_room_user|
+      authorize! :index, chat_room_user
+    end
   end
 
   # GET /chat_rooms/1
   # GET /chat_rooms/1.json
   def show
-    if chat_rooms_user = @chat_room.chat_rooms_users.where(user_id: current_user.id).take
+    authorize! :show, @chat_room
+    if chat_rooms_user = @chat_room.chat_rooms_users.find_by(user_id: params[:user_id])
       chat_rooms_user.update(unread: 0)
     end
+    @message = Message.new
   end
 
   # GET /chat_rooms/new
   def new
-    @chat_room = ChatRoom.new
+    existing_chat_room = nil
+    ChatRoom.find_each do |chat|
+      existing_chat_room = chat if chat.users.include? current_user and chat.users.include? User.find(params[:user_id]) and chat.users.size == 2
+    end
+    if existing_chat_room
+      @chat_room = existing_chat_room
+      redirect_to user_chat_room_url(current_user, @chat_room)
+    else
+      create
+    end
   end
 
   # GET /chat_rooms/1/edit
@@ -27,26 +42,27 @@ class ChatRoomsController < ApplicationController
   # POST /chat_rooms
   # POST /chat_rooms.json
   def create
-    existing_chat_room = nil
-    ChatRoom.find_each do |chat|
-      existing_chat_room = chat if chat.users.include? current_user and chat.users.include? User.find(params[:user_id]) and chat.users.size == 2
-    end
-    if existing_chat_room
-      @chat_room = existing_chat_room
-    else
-      chat_room = ChatRoom.create
-      @chat_room = chat_room
-      session[:user_ids] = [params[:user_id], current_user.id]
-    end
+    chat_room = ChatRoom.new
+    chat_room.users << User.find(params[:user_id])
+    chat_room.users << current_user
+    chat_room.save
+    @chat_room = chat_room
     ChatRoomCleanupJob.set(wait: 1.minute).perform_later(@chat_room)
-    @response = {url: user_chat_room_path(current_user, @chat_room), notice: 'Chat room was successfully created.'}
-    render :show
+    # @response = {url: user_chat_room_path(current_user, @chat_room), notice: 'Chat room was successfully created.'}
+    redirect_to user_chat_room_url(current_user, @chat_room)
   end
 
   # PATCH/PUT /chat_rooms/1
   # PATCH/PUT /chat_rooms/1.json
   def update
-    @chat_room.update!(name: params[:name])
+    if params[:name]
+      @chat_room.update!(name: params[:name])
+    end
+    if params[:removed]
+      params[:removed].split(',').each do |removed|
+        @chat_room.users.delete User.find removed
+      end
+    end
     head :ok
   end
 
