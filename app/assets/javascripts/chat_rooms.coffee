@@ -1,6 +1,7 @@
 jQuery ->
 
-  $('#messages')[0].scrollTop = $('#messages')[0].scrollHeight
+  if $('#messages').size() > 0
+    $('#messages')[0].scrollTop = $('#messages')[0].scrollHeight
 
   $('.edit').editable ((value, settings) ->
     $.ajax
