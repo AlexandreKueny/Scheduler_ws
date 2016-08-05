@@ -1,2 +1,2 @@
-<%= @user.first_name %>
+<% header @user.first_name + ' ' + @user.last_name %>
 <a class="btn btn-default" href="<%= new_user_chat_room_path(@user) %>">Chat</a>
