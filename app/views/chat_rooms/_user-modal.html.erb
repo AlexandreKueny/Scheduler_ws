@@ -1,6 +1,6 @@
 <% if user != current_user %>
     <li class="list-group-item user-line" data-id="<%= user.id %>">
-      <%= user.first_name %>
+      <%= user.first_name + ' ' + user.last_name %>
       <button class="btn btn-danger pull-right remove-user">
         <span class="glyphicon glyphicon-remove"></span>
       </button>

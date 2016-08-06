@@ -1,7 +1,18 @@
-<% header "Messages!" %>
+<div class='page-header'>
+  <ul class="list-inline">
+    <li>
+      <h1>Messages !</h1>
+    </li>
+    <li>
+      <button class="btn" id="users-btn" data-toggle="modal" data-target="#users-modal">New</button>
+
+      <%= render partial: 'new_chat_room_modal', locals: {users: []} %>
+    </li>
+  </ul>
+</div>
 
 <div class="list-group">
-  <% @chat_rooms_users.each do |chat_room_user| %>
+  <% @unread_chat_rooms_users.each do |chat_room_user| %>
       <% chat_room = chat_room_user.chat_room %>
       <% unread = chat_room_user.unread %>
       <a class="list-group-item <%= unread > 0 ? 'list-group-item-success' : nil %>" id="<%= chat_room.id %>" href="<%= user_chat_room_path(current_user, chat_room) %>">
@@ -10,6 +21,19 @@
         <p class="list-group-item-text">
           <% chat_room.users.each do |user| %>
             <%= user.first_name + ' ' if user != current_user %>
+          <% end %>
+        </p>
+      </a>
+  <% end %>
+  <% @read_chat_rooms_users.each do |chat_room_user| %>
+      <% chat_room = chat_room_user.chat_room %>
+      <% unread = chat_room_user.unread %>
+      <a class="list-group-item" id="<%= chat_room.id %>" href="<%= user_chat_room_path(current_user, chat_room) %>">
+        <span class="badge"><%= nil %></span>
+        <h4 class="list-group-item-heading"><%= chat_room.name %></h4>
+        <p class="list-group-item-text">
+          <% chat_room.users.each do |user| %>
+              <%= user.first_name + ' ' if user != current_user %>
           <% end %>
         </p>
       </a>

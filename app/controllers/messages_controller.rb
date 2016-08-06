@@ -6,6 +6,13 @@ class MessagesController < ApplicationController
   # GET /messages.json
   def index
     @message = ChatRoom.find(params[:chat_room_id]).messages.order(created_at: :desc).take
+    @unread = {total: 0, chat_room: 0}
+    current_user.chat_rooms_users.each do |chat_room_user|
+      @unread[:total] += chat_room_user.unread
+      if @message.chat_room == chat_room_user.chat_room
+        @unread[:chat_room] = chat_room_user.unread
+      end
+    end
   end
 
   # GET /messages/1
@@ -38,21 +45,16 @@ class MessagesController < ApplicationController
     end
     message.save
     chat_room.update(active: true)
-    unread = 0
-    chat_room_unread = 0
-    chat_room.chat_rooms_users.each do |chat_room_user|
-      unread += chat_room_user.unread
-      chat_room_unread = chat_room_user.unread.to_i if chat_room_user.chat_room == chat_room
-    end
     users = []
     chat_room.users.each do |user|
       users << user.id
     end
     ActionCable.server.broadcast 'messages',
                                  users: users,
-                                 chat_room_id: params[:chat_room_id],
-                                 chat_room_unread: chat_room_unread,
-                                 unread: unread
+                                 chat_room_id: params[:chat_room_id]
+    # respond_to do |format|
+    #   format.js {}
+    # end
     head :ok
   end
 

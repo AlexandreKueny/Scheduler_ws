@@ -17,7 +17,7 @@
   <div class="panel panel-default" id="chat">
 
     <div id="messages" class="panel-body">
-      <%= render partial: 'messages/message', collection: @chat_room.messages %>
+      <%= render partial: 'messages/message', collection: @chat_room.messages.order(updated_at: :asc) %>
     </div>
 
   </div>

@@ -5,8 +5,12 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms
   # GET /chat_rooms.json
   def index
-    @chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.joins(:chat_room).where(chat_rooms: {active: true})
-    @chat_rooms_users.each do |chat_room_user|
+    @unread_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(true).joins(:chat_room).where(chat_rooms: {active: true}).order('chat_rooms.updated_at desc')
+    @read_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(false).joins(:chat_room).where(chat_rooms: {active: true}).order('chat_rooms.updated_at desc')
+    @unread_chat_rooms_users.each do |chat_room_user|
+      authorize! :index, chat_room_user
+    end
+    @read_chat_rooms_users.each do |chat_room_user|
       authorize! :index, chat_room_user
     end
   end
@@ -24,12 +28,16 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms/new
   def new
     existing_chat_room = nil
+    users = JSON.parse params[:users]
     ChatRoom.find_each do |chat|
-      existing_chat_room = chat if chat.users.include? current_user and chat.users.include? User.find(params[:user_id]) and chat.users.size == 2
+      existing_chat_room = chat if ([current_user.id].concat(users) - chat.users.ids).empty? and chat.users.size == users.size + 1
     end
     if existing_chat_room
       @chat_room = existing_chat_room
-      redirect_to user_chat_room_url(current_user, @chat_room)
+      respond_to do |format|
+        format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
+        format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
+      end
     else
       create
     end
@@ -42,25 +50,49 @@ class ChatRoomsController < ApplicationController
   # POST /chat_rooms
   # POST /chat_rooms.json
   def create
+    users = JSON.parse params[:users]
     chat_room = ChatRoom.new
-    chat_room.users << User.find(params[:user_id])
+    users.each do |user|
+      chat_room.users << User.find(user)
+    end
     chat_room.users << current_user
     chat_room.save
     @chat_room = chat_room
     ChatRoomCleanupJob.set(wait: 1.minute).perform_later(@chat_room)
-    # @response = {url: user_chat_room_path(current_user, @chat_room), notice: 'Chat room was successfully created.'}
-    redirect_to user_chat_room_url(current_user, @chat_room)
+    respond_to do |format|
+      format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
+      format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
+    end
   end
 
   # PATCH/PUT /chat_rooms/1
   # PATCH/PUT /chat_rooms/1.json
   def update
+
+    if params[:removed] and params[:added]
+      add= JSON.parse params[:added]
+      remove = JSON.parse params[:removed]
+
+      force_del = []
+      force_add = []
+      commons = add & remove
+      commons.each do |common|
+        force_del << common if remove.count(common) > add.count(common)
+        force_add << common if remove.count(common) < add.count(common)
+      end
+    end
+
     if params[:name]
       @chat_room.update!(name: params[:name])
     end
-    if params[:removed]
-      params[:removed].split(',').each do |removed|
-        @chat_room.users.delete User.find removed
+    if remove
+      remove.uniq.each do |removed|
+        @chat_room.users.delete User.find removed unless commons.include? removed and not force_del.include? removed
+      end
+    end
+    if add
+      add.uniq.each do |added|
+        @chat_room.users << User.find(added) unless commons.include? added and not force_add.include? added
       end
     end
     head :ok

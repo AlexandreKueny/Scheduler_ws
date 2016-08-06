@@ -15,9 +15,9 @@ App.messages = App.cable.subscriptions.create "MessagesChannel",
         success: (response) ->
           reg = RegExp('\/chat_rooms\/' + data.chat_room_id)
           if not window.document.location.pathname.match(reg)
-            $('#unread_badge').html(data.unread)
-            $('#'+data.chat_room_id + ' .badge').html(data.unread)
-            if data.unread > 0
+            $('#unread_badge').html(response.total_unread)
+            $('#'+data.chat_room_id + ' .badge').html(response.chat_room_unread)
+            if response.chat_room_unread > 0
               $('#'+data.chat_room_id).addClass('list-group-item-success')
           else
             $('#messages').append(renderMessage(response))
