@@ -1,18 +1,23 @@
 Rails.application.routes.draw do
   root to: 'pages#index'
 
-  devise_for :users, :controllers => { :sessions => 'sessions'}
+  devise_for :users, :controllers => {:sessions => 'sessions'}
 
   resources :users do
+    resources :collaborators do
+      collection do
+        get 'remove', to: 'collaborators#remove'
+        post 'respond', to: 'collaborators#respond'
+      end
+    end
+    get 'planning', to: 'pages#planning', as: 'planning'
+    resources :events
     resources :chat_rooms do
       resources :messages
     end
   end
 
-  get '/planning', to: 'pages#planning', as: :planning
-  get '/collaborators', to: 'pages#collaborators', as: :collaborators
-  get '/users/list', to: 'users#search'
-  get '/set_unread', to: 'chat_rooms_users#set_unread'
+  get 'users/list', to: 'users#search'
 
   mount ActionCable.server => '/cable'
 

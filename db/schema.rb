@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160802210204) do
+ActiveRecord::Schema.define(version: 20160815170916) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,14 @@ ActiveRecord::Schema.define(version: 20160802210204) do
     t.integer "unread",       default: 0
   end
 
+  create_table "collaborators_links", force: :cascade do |t|
+    t.uuid     "user_id"
+    t.uuid     "collaborator_id"
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.boolean  "accepted",        default: false
+  end
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
     t.integer  "attempts",   default: 0, null: false
@@ -43,6 +51,23 @@ ActiveRecord::Schema.define(version: 20160802210204) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+  end
+
+  create_table "events", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.uuid     "user_id"
+    t.string   "title",            default: "",    null: false
+    t.text     "description"
+    t.boolean  "allDay",           default: false
+    t.datetime "start"
+    t.datetime "end"
+    t.string   "url"
+    t.boolean  "editable",         default: true
+    t.boolean  "startEditable",    default: true
+    t.boolean  "durationEditable", default: true
+    t.boolean  "overlap",          default: true
+    t.string   "color"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
   end
 
   create_table "messages", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
@@ -78,6 +103,7 @@ ActiveRecord::Schema.define(version: 20160802210204) do
     t.datetime "locked_at"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
+    t.integer  "accept_messages_from",   default: 1
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree

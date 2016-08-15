@@ -3,6 +3,10 @@
 @import 'bootstrap/theme';
 @import "jquery-ui";
 @import "chat_rooms";
+@import "typeahead";
+@import "users";
+@import "fullcalendar";
+@import 'bootstrap-datetimepicker';
 
 .alert-alert {
   @extend .alert-warning;
@@ -56,19 +60,12 @@
   color: red;
 }
 
-.search {
-  position: relative;
+#search-form {
+  width: 196px;
 }
 
-.search_box {
-  text-indent: 15px;
-}
-
-.glyphicon-search {
-  position: absolute;
-  top: 10px;
-  right: 190px;
-  z-index: 2;
+#search-bar {
+  width: 196px;
 }
 
 html, body {
@@ -105,4 +102,12 @@ html, body {
 
 .dropdown-toggle {
   cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: inherit;
 }

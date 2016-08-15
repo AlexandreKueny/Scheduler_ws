@@ -5,8 +5,8 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms
   # GET /chat_rooms.json
   def index
-    @unread_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(true).joins(:chat_room).where(chat_rooms: {active: true}).order('chat_rooms.updated_at desc')
-    @read_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(false).joins(:chat_room).where(chat_rooms: {active: true}).order('chat_rooms.updated_at desc')
+    @unread_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(true).joins(:chat_room).merge(ChatRoom.active).order('chat_rooms.updated_at desc')
+    @read_chat_rooms_users = User.find(params[:user_id]).chat_rooms_users.current.unread(false).joins(:chat_room).merge(ChatRoom.active).order('chat_rooms.updated_at desc')
     @unread_chat_rooms_users.each do |chat_room_user|
       authorize! :index, chat_room_user
     end

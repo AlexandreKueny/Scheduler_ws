@@ -7,25 +7,29 @@
       <ul class="nav navbar-nav">
         <% if user_signed_in? %>
             <li>
-              <%= link_to planning_path do %>
+              <%= link_to user_planning_path(current_user) do %>
                   <span class="glyphicon glyphicon-calendar"></span>
                   <span>My Planning</span>
               <% end %>
             </li>
             <li>
-              <%= link_to collaborators_path do %>
+              <%= link_to user_collaborators_path(current_user) do %>
+                  <% count = CollaboratorsLink.unaccepted.requested_to(current_user).count %>
                   <span class="glyphicon glyphicon-globe"></span>
                   <span>My Collaborators</span>
+                  <span class="badge"><%= count > 0 ? count : nil %></span>
               <% end %>
             </li>
         <% end %>
       </ul>
       <ul class="nav navbar-nav pull-right">
         <% if user_signed_in? %>
-            <form class="navbar-form navbar-left search" role="search">
-              <span class="glyphicon glyphicon-search"></span>
-              <input type="text" class="form-control typeahead search_box" placeholder="Search user" id="searchBar" autocomplete="off">
-            </form>
+            <li>
+              <div class="navbar-form input-group" role="search" id="search-form">
+                <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search"></span></span>
+                <input type="text" class="form-control typeahead" placeholder="Search user" id="search-bar">
+              </div>
+            </li>
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-user"></span>
@@ -38,7 +42,7 @@
                       <span>Chat</span>
                       <% unread = 0 %>
                       <% current_user.chat_rooms_users.each do |chat_room_user| %>
-                        <% unread += chat_room_user.unread %>
+                          <% unread += chat_room_user.unread %>
                       <% end %>
                       <span class="badge" id="unread_badge"><%= unread > 0 ? unread : nil %></span>
                       <span class="glyphicon glyphicon-envelope pull-right"></span>

@@ -35,6 +35,12 @@
     </div>
 
     <div class="form-group">
+      <% options = [['All', 1],['Collaborators', 2],['Nobody', 3]] %>
+      <%= f.label :accept_messages_from %>
+      <%= f.select :accept_messages_from, options_for_select(options) %>
+    </div>
+
+    <div class="form-group">
       <%= f.label :current_password %>
       <%= f.password_field :current_password, autocomplete: "off", class: 'form-control' %>
       <span class="help-block">we need your current password to confirm your changes</span>

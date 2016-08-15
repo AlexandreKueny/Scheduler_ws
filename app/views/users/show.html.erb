@@ -1,2 +1,40 @@
-<% header @user.first_name + ' ' + @user.last_name %>
-<a class="btn btn-default" href="<%= new_user_chat_room_path(current_user, users: [@user.id].to_json) %>">Chat</a>
+<div class='page-header'>
+  <ul class="list-inline">
+    <li>
+      <h1><%= @user.first_name + ' ' + @user.last_name %></h1>
+    </li>
+    <% if @messages_accepted %>
+        <li>
+          <a class="btn btn-default" href="<%= new_user_chat_room_path(current_user, users: [@user.id].to_json) %>">
+            <span class="glyphicon glyphicon-envelope"></span>
+            Chat
+          </a>
+        </li>
+    <% end %>
+    <% collaborators = current_user.collaborators %>
+    <li>
+      <div class="dropdown" id="added-collaborator-btn" style="<%= (collaborators.include? @user) ? 'display: block' : 'display: none' %>">
+        <button class="btn btn-success dropdown-toggle" type="button" id="added-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="<%= (collaborators.joins(:collaborators_links).merge(CollaboratorsLink.accepted).include? @user) ? 'display: block' : 'display: none' %>">
+          Added
+          <span class="caret"></span>
+        </button>
+        <button class="btn btn-success dropdown-toggle" type="button" id="added-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="<%= (collaborators.joins(:collaborators_links).merge(CollaboratorsLink.accepted).include? @user) ? 'display: none' : 'display: block' %>">
+          Pending
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" id="drop">
+          <li>
+            <a class="btn" id="remove-collaborator-btn">
+              Remove
+            </a>
+          </li>
+        </ul>
+      </div>
+      <button class="btn btn-default" id="add-collaborator-btn" style="<%= (collaborators.include? @user) ? 'display: none' : 'display: block' %>">
+        Add
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
+    </li>
+  </ul>
+</div>
+

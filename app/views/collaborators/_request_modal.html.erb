@@ -1,0 +1,8 @@
+<% user = User.find request.user_id %>
+<li class="list-group-item user-line" data-id="<%= user.id %>">
+  <%= link_to "#{user.first_name} #{user.last_name}", '/users/' + user.id %>
+  <div class="btn-group pull-right" role="group" aria-label="...">
+    <button type="button" class="btn btn-default btn-success accept-request" data-id="<%= request.id %>">Accept</button>
+    <button type="button" class="btn btn-default btn-danger decline-request" data-id="<%= request.id %>">Decline</button>
+  </div>
+</li>

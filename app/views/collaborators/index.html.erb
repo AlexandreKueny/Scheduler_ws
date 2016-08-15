@@ -1,0 +1,24 @@
+<div class='page-header'>
+  <ul class="list-inline">
+    <li>
+      <h1>Collaborators !</h1>
+    </li>
+    <% if @collaborators_requests.count > 0 %>
+        <li>
+          <button class="btn btn-success" id="users-btn" data-toggle="modal" data-target="#requests-modal">
+            <span class="glyphicon glyphicon-star"></span>
+            Requests
+          </button>
+        </li>
+        <%= render partial: 'requests_modal', locals: {requests: @collaborators_requests} %>
+    <% end %>
+  </ul>
+</div>
+
+<div class="list-group">
+  <% @collaborators.each do |collaborator| %>
+      <a class="list-group-item" href="<%= user_path(collaborator) %>">
+        <h4 class="list-group-item-heading"><%= collaborator.first_name + ' ' + collaborator.last_name %></h4>
+      </a>
+  <% end %>
+</div>

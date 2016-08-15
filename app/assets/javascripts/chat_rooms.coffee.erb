@@ -24,7 +24,7 @@ jQuery ->
     name: 'names',
     display: 'name'
     source: (query, syncResults, asyncResults) ->
-      $.get '/users.json?search=' + query, (data) ->
+      $.get '/users/' + $.cookie('current_user') + '/collaborators.json?search=' + query, (data) ->
         asyncResults data
   .on 'typeahead:selected', ($e, datum) ->
     exist = false
@@ -36,9 +36,11 @@ jQuery ->
         if e == datum.id
           exist = false
     if not exist
-      $('#users-list').append(renderUser(datum))
+      $.ajax
+        url: '/users/' + datum.id
+        type: 'get'
+        dataType: "script"
       added.push datum.id
-      $('#error-text').hide()
   .on 'typeahead:close', ->
     $(this).val('')
   .on 'typeahead:idle', ->
@@ -105,21 +107,6 @@ jQuery ->
         e.preventDefault()
         $('[data-send="message"]').click()
         $('#message_content').val('')
-
-
-  $('#start-chat-btn').click ->
-    $.ajax
-      url: window.document.location + '/chat_rooms'
-      type: 'post'
-      dataType: "json"
-      success: (data) ->
-        console.log data
-        window.location = data.url
-
-  renderUser = (data) ->
-    '<li class="list-group-item user-line" data-id="' + data.id + '" data-new="true">' +
-      data.name +
-      '<button class="btn btn-danger pull-right remove-user">
-        <span class="glyphicon glyphicon-remove"></span>
-      </button>
-    </li>'
+    if e.which == 9
+      e.preventDefault()
+      return false

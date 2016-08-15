@@ -1,6 +1,6 @@
 <%=form_for message, remote: true, url: "/users/#{current_user.id}/chat_rooms/#{chat_room.id}/messages" do |f|%>
     <%= f.label :your_message%>:
-    <%= f.text_area :content, class: 'form-control', autocomplete: 'off', placeholder:'New message', data: {textarea: 'message'}%>
+    <%= f.text_area :content, class: 'form-control', autocomplete: 'off', placeholder:'New message', autofocus: 'true', data: {textarea: 'message'}%>
 
     <%= f.submit 'send', class: 'btn btn-primary', style: 'display: none', data: {send: 'message'}%>
 <%end%>

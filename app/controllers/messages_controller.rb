@@ -7,11 +7,18 @@ class MessagesController < ApplicationController
   def index
     @message = ChatRoom.find(params[:chat_room_id]).messages.order(created_at: :desc).take
     @unread = {total: 0, chat_room: 0}
+    params[:url].match(/\/chat_rooms\/#{@message.chat_room.id}/)? @path = true : @path = false
+    if @path
+      ChatRoomsUser.where(user_id: current_user.id, chat_room_id: @message.chat_room.id).update(unread: 0)
+    end
     current_user.chat_rooms_users.each do |chat_room_user|
       @unread[:total] += chat_room_user.unread
       if @message.chat_room == chat_room_user.chat_room
         @unread[:chat_room] = chat_room_user.unread
       end
+    end
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -52,9 +59,6 @@ class MessagesController < ApplicationController
     ActionCable.server.broadcast 'messages',
                                  users: users,
                                  chat_room_id: params[:chat_room_id]
-    # respond_to do |format|
-    #   format.js {}
-    # end
     head :ok
   end
 
