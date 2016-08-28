@@ -1,0 +1,50 @@
+<%= form_for([current_user, event], remote: true) do |f| %>
+
+    <div class="form-group">
+      <%= f.label :Title %>
+      <%= f.text_field :title, class: 'form-control', placeholder: 'Title', autocomplete: 'off' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :Description %>
+      <%= f.text_area :description, class: 'form-control', placeholder: 'Description' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :All_day_? %>
+      <%= f.check_box :allDay, id: 'allDay-checkbox' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :Start %>
+      <%= f.text_field :start, class: 'form-control', id: 'datetimepicker1' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :End %>
+      <%= f.text_field :end, class: 'form-control', id: 'datetimepicker2' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :Color %>
+      <%= f.select :color, options_for_select([['Default', nil], ['Blue', 'blue'], ['Red', 'red'], ['Black', 'black']]) %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :Can_overlap_? %>
+      <%= f.check_box :overlap %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :allow_edit_duration %>
+      <%= f.check_box :durationEditable %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :allow_move_event %>
+      <%= f.check_box :startEditable %>
+    </div>
+
+    <%= f.submit 'send', class: 'btn btn-primary', style: 'display: none', id: 'submit-event'%>
+
+<% end %>

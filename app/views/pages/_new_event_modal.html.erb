@@ -5,7 +5,7 @@
         <div class="modal-title">New Event</div>
       </div>
       <div class="modal-body">
-        <%= form_for(event, url: '/users/' + current_user.id + '/events', html: {method: :post}) do |f| %>
+        <%= form_for(event, url: '/users/' + current_user.id + '/events', remote: true, html: {method: :post}) do |f| %>
 
             <div class="form-group">
               <%= f.label :Title %>
@@ -18,35 +18,48 @@
             </div>
 
             <div class="form-group">
+              <%= f.label :All_day_? %>
+              <%= f.check_box :allDay, id: 'allDay-checkbox' %>
+            </div>
+
+            <div class="form-group">
               <%= f.label :Start %>
-              <div class='input-group date' id='datetimepicker1'>
-                <input type='text' class="form-control" placeholder="Choose a date"/>
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-              </div>
+              <%= f.text_field :start, class: 'form-control', id: 'datetimepicker1' %>
             </div>
 
             <div class="form-group">
               <%= f.label :End %>
-              <div class='input-group date' id='datetimepicker2'>
-                <input type='text' class="form-control" placeholder="Choose a date"/>
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-              </div>
+              <%= f.text_field :end, class: 'form-control', id: 'datetimepicker2' %>
             </div>
 
-            <div class="checkbox">
-              <label><input type="checkbox" value="">All day</label>
+            <div class="form-group">
+              <%= f.label :Color %>
+              <%= f.select :color, options_for_select([['Default', nil], ['Blue', 'blue'], ['Red', 'red'], ['Black', 'black']]) %>
             </div>
+
+            <div class="form-group">
+              <%= f.label :Can_overlap_? %>
+              <%= f.check_box :overlap %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :allow_edit_duration %>
+              <%= f.check_box :durationEditable %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :allow_move_event %>
+              <%= f.check_box :startEditable %>
+            </div>
+
+            <%= f.submit 'send', class: 'btn btn-primary', style: 'display: none', id: 'submit-new-event'%>
 
         <% end %>
       </div>
       <div class="modal-footer" id="users-modal-footer">
         <span class="pull-left" id="error-text" style="display: none; color: red; margin-top: 6px">At least 1 user</span>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button class="btn btn-success" id="validate-new-chat-room-modal">OK</button>
+        <button class="btn btn-success" id="create-new-event-btn">OK</button>
       </div>
     </div>
   </div>

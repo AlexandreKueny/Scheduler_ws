@@ -1,0 +1,17 @@
+<div class="modal" id="edit_event">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit Event</h4>
+      </div>
+      <div class="modal-body">
+        <%= render 'form', event: @event, new: false %>
+      </div>
+      <div class="modal-footer" id="users-modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button class="btn btn-success" id="validate-event-btn">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
