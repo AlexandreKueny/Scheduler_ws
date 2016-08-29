@@ -27,7 +27,7 @@
 
     <div class="form-group">
       <%= f.label :Color %>
-      <%= f.select :color, options_for_select([['Default', nil], ['Blue', 'blue'], ['Red', 'red'], ['Black', 'black']]) %>
+      <%= f.select :color, options_for_select([['Default', nil], ['Blue', 'blue'], ['Red', 'red'], ['Black', 'black']], event.color) %>
     </div>
 
     <div class="form-group">

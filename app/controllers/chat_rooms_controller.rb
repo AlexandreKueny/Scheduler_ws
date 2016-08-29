@@ -27,20 +27,7 @@ class ChatRoomsController < ApplicationController
 
   # GET /chat_rooms/new
   def new
-    existing_chat_room = nil
-    users = JSON.parse params[:users]
-    ChatRoom.find_each do |chat|
-      existing_chat_room = chat if ([current_user.id].concat(users) - chat.users.ids).empty? and chat.users.size == users.size + 1
-    end
-    if existing_chat_room
-      @chat_room = existing_chat_room
-      respond_to do |format|
-        format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
-        format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
-      end
-    else
-      create
-    end
+    @chat_room = ChatRoom.new
   end
 
   # GET /chat_rooms/1/edit
@@ -50,18 +37,30 @@ class ChatRoomsController < ApplicationController
   # POST /chat_rooms
   # POST /chat_rooms.json
   def create
-    users = JSON.parse params[:users]
-    chat_room = ChatRoom.new
-    users.each do |user|
-      chat_room.users << User.find(user)
+    existing_chat_room = nil
+    users = params[:users]
+    current_user.chat_rooms.find_each do |chat|
+      existing_chat_room = chat if ([current_user.id].concat(users) - chat.users.ids).empty? and chat.users.size == users.size + 1
     end
-    chat_room.users << current_user
-    chat_room.save
-    @chat_room = chat_room
-    ChatRoomCleanupJob.set(wait: 1.minute).perform_later(@chat_room)
-    respond_to do |format|
-      format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
-      format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
+    if existing_chat_room
+      @chat_room = existing_chat_room
+      respond_to do |format|
+        format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
+        format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
+      end
+    else
+      chat_room = ChatRoom.new
+      users.each do |user|
+        chat_room.users << User.find(user)
+      end
+      chat_room.users << current_user
+      chat_room.save
+      @chat_room = chat_room
+      ChatRoomCleanupJob.set(wait: 1.minute).perform_later(@chat_room)
+      respond_to do |format|
+        format.html { redirect_to user_chat_room_url(current_user, @chat_room) }
+        format.json { render json: {href: user_chat_room_url(current_user, @chat_room)} }
+      end
     end
   end
 
@@ -69,30 +68,19 @@ class ChatRoomsController < ApplicationController
   # PATCH/PUT /chat_rooms/1.json
   def update
 
-    if params[:removed] and params[:added]
-      add= JSON.parse params[:added]
-      remove = JSON.parse params[:removed]
-
-      force_del = []
-      force_add = []
-      commons = add & remove
-      commons.each do |common|
-        force_del << common if remove.count(common) > add.count(common)
-        force_add << common if remove.count(common) < add.count(common)
-      end
-    end
-
     if params[:name]
       @chat_room.update!(name: params[:name])
-    end
-    if remove
-      remove.uniq.each do |removed|
-        @chat_room.users.delete User.find removed unless commons.include? removed and not force_del.include? removed
+    elsif params[:users]
+      users = params[:users]
+      users << current_user.id
+      chat_room_users = @chat_room.users.ids
+      add = users - chat_room_users
+      remove = chat_room_users - users
+      add.each do |user_id|
+        @chat_room.users << User.find(user_id)
       end
-    end
-    if add
-      add.uniq.each do |added|
-        @chat_room.users << User.find(added) unless commons.include? added and not force_add.include? added
+      remove.each do |user_id|
+        @chat_room.users.delete User.find(user_id)
       end
     end
     head :ok

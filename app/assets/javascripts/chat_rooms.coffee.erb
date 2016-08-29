@@ -1,9 +1,5 @@
 jQuery ->
 
-  Array::diff = (a) ->
-    @filter (i) ->
-      a.indexOf(i) < 0
-
   if $('#messages').size() > 0
     $('#messages')[0].scrollTop = $('#messages')[0].scrollHeight
 
@@ -15,88 +11,41 @@ jQuery ->
     return value
   )
 
-  added= []
-  removed = []
-  hidden = []
+  $('#new-chat_room-btn').click ->
+    $.getScript '/users/' + $.cookie('current_user') + '/chat_rooms/new'
 
-  $('#add-user')
-  .typeahead {highlight: false},
-    name: 'names',
-    display: 'name'
-    source: (query, syncResults, asyncResults) ->
-      $.get '/users/' + $.cookie('current_user') + '/collaborators.json?search=' + query, (data) ->
-        asyncResults data
-  .on 'typeahead:selected', ($e, datum) ->
-    exist = false
+  $('#edit-chat_room-btn').click ->
+    $.getScript window.document.location.pathname + '/edit'
+
+  $('#remote').on 'click', '#validate-new-chat_room-btn', ->
+    users = []
     $.each $('#users-list .user-line'), (i, e) ->
-      if $(e).data('id') == datum.id
-        exist = true
-    if exist
-      $.each removed, (i, e) ->
-        if e == datum.id
-          exist = false
-    if not exist
-      $.ajax
-        url: '/users/' + datum.id
-        type: 'get'
-        dataType: "script"
-      added.push datum.id
-  .on 'typeahead:close', ->
-    $(this).val('')
-  .on 'typeahead:idle', ->
-    $(this).val('')
-
-  $('#dismiss-modal').click ->
-    $('#users-modal').modal('hide')
-    $('#error-text').hide()
-    $.each hidden, (i, e) ->
-      e.show()
-    $('[data-new=true]').remove()
-    hidden = []
-    removed = []
-    added = []
-
-  $('#validate-modal').click ->
-    console.log added
-    console.log removed
+      users.push e.dataset.id
     $.ajax
-      type: 'patch'
-      url: window.document.location.pathname
-      data: {removed: JSON.stringify(removed), added: JSON.stringify(added)}
-      dataType: 'json'
-    $('#users-modal').modal('hide')
-    $('#error-text').hide()
-    $.each hidden, (i, e) ->
-      e.remove()
-    hidden = []
-    removed = []
-    added = []
-
-  $('#validate-new-chat-room-modal').click ->
-    console.log added
-    console.log removed
-    $.ajax
-      type: 'get'
-      url: window.document.location.pathname + '/new'
-      data: {users: JSON.stringify(added.diff(removed))}
+      type: 'post'
+      url: '/users/' + $.cookie('current_user') + '/chat_rooms'
+      data: {users: users}
       dataType: 'json'
       success: (data) ->
         window.document.location = data.href
-    $('#users-modal').modal('hide')
-    $('#error-text').hide()
-    $.each hidden, (i, e) ->
-      e.remove()
-    hidden = []
-    removed = []
-    added = []
+    $('#new_chat_room').modal('hide')
+
+  $('#remote').on 'click', '#validate-edit-chat_room-btn', ->
+    users = []
+    $.each $('#users-list .user-line'), (i, e) ->
+      users.push e.dataset.id
+    $.ajax
+      type: 'patch'
+      url: window.document.location.pathname
+      data: {users: users}
+      dataType: 'json'
+    $('#edit-chat_room').modal('hide')
 
 
-  $('#users-list').on 'click', '.remove-user', ->
-    if removed.length + 1 < $('#users-list .user-line').size()
-      elem = $(this).parent()
-      hidden.push elem
-      removed.push elem.data('id')
-      elem.hide()
+  $('#remote').on 'click', '.remove-user', ->
+    console.log 'click'
+    if $('#users-list .user-line').size() > 1
+      $(this).parent().remove()
     else
       $('#error-text').show()
 
@@ -107,6 +56,3 @@ jQuery ->
         e.preventDefault()
         $('[data-send="message"]').click()
         $('#message_content').val('')
-    if e.which == 9
-      e.preventDefault()
-      return false

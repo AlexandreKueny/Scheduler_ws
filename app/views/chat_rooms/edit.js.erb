@@ -1,0 +1,32 @@
+$('#remote').html('<%= j render 'edit' %>');
+$('#add-user').typeahead({
+  highlight: false
+}, {
+  name: 'names',
+  display: 'name',
+  source: function(query, syncResults, asyncResults) {
+    return $.get('/users/' + $.cookie('current_user') + '/collaborators.json?search=' + query, function(data) {
+      return asyncResults(data);
+    });
+  }
+}).on('typeahead:selected', function($e, datum) {
+  var exist;
+  exist = false;
+  $.each($('#users-list .user-line'), function(i, e) {
+    if ($(e).data('id') === datum.id) {
+      return exist = true;
+    }
+  });
+  if (!exist) {
+    return $.ajax({
+      url: '/users/' + datum.id,
+      type: 'get',
+      dataType: "script"
+    });
+  }
+}).on('typeahead:close', function() {
+  return $(this).val('');
+}).on('typeahead:idle', function() {
+  return $(this).val('');
+});
+$('#edit-chat_room').modal('show');

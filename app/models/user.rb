@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :events
 
   scope :searchable, -> { where('searchable IS true') }
-  scope :not_current, ->(user) { where.not(id: user.id) }
+  scope :not, ->(user) { where.not(id: user.id) }
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable, :lockable, :zxcvbnable

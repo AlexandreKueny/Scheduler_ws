@@ -1,20 +1,20 @@
-<div id="users-modal" class="modal" role="dialog" data-keyboard="false" data-backdrop="static">
+<div class="modal" id="new_chat_room">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">Users</div>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">New Chat</h4>
       </div>
       <div class="modal-body">
         <input type="text" class="form-control typeahead" placeholder="Search user" id="add-user" autocomplete="off">
         <hr>
         <ul class="list-group" id="users-list">
-          <%= render partial: 'user-modal', collection: users, as: :user %>
         </ul>
       </div>
       <div class="modal-footer" id="users-modal-footer">
         <span class="pull-left" id="error-text" style="display: none; color: red; margin-top: 6px">At least 1 user</span>
-        <button class="btn btn-default" id="dismiss-modal">Cancel</button>
-        <button class="btn btn-success" id="validate-new-chat-room-modal">OK</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button class="btn btn-success" id="validate-new-chat_room-btn">OK</button>
       </div>
     </div>
   </div>

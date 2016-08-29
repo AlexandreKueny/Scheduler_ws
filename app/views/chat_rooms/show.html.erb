@@ -4,12 +4,9 @@
       <h1 class='edit'><%= @chat_room.name %></h1>
     </li>
     <li>
-      <button class="btn" id="users-btn" data-toggle="modal" data-target="#users-modal">Users</button>
+      <button class="btn" id="edit-chat_room-btn">Users</button>
     </li>
   </ul>
-
-  <%= render partial: 'users-modal', locals: {users: @chat_room.users.not_current(current_user)} %>
-
 </div>
 
 <div class="col-md-10 col-md-offset-1">
