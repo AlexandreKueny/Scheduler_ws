@@ -1,5 +1,5 @@
 <% if @path %>
-$("#messages").append("<%= escape_javascript(render @message, message_counter: 0) %>")
+$("#messages").append("<%= escape_javascript(render @message) %>")
 $("#messages")[0].scrollTop = $("#messages")[0].scrollHeight
 <% else %>
 $("#unread_badge").html(<%= @unread[:total].to_s %>)

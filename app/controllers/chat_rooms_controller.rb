@@ -23,6 +23,8 @@ class ChatRoomsController < ApplicationController
       chat_rooms_user.update(unread: 0)
     end
     @message = Message.new
+    @date = @chat_room.created_at
+    @last_date = @date.to_date
   end
 
   # GET /chat_rooms/new

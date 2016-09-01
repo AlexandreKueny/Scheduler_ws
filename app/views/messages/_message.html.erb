@@ -1,10 +1,8 @@
 <div>
   <% if not @last_date === message.updated_at.getlocal.to_date and Time.now.to_i - @date.to_i > 1.day %>
       <% @last_date = message.updated_at.getlocal.to_date %>
-      <% if message_counter > 0 %>
-          <div class="message-date"><%= @date.to_date %></div>
-          <hr class="hr">
-      <% end %>
+      <div class="message-date"><%= @date.to_date.strftime('%d/%m/%Y') %></div>
+      <hr class="hr">
   <% end %>
 </div>
 <p class="message" style="word-wrap: break-word" id="<%= message.id %>">

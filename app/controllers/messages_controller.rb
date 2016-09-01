@@ -5,9 +5,17 @@ class MessagesController < ApplicationController
   # GET /messages
   # GET /messages.json
   def index
-    @message = ChatRoom.find(params[:chat_room_id]).messages.order(created_at: :desc).take
+    messages = ChatRoom.find(params[:chat_room_id]).messages.order(created_at: :desc).limit(2)
+    @message = messages.first
+    if messages.second
+      @date = messages.second.updated_at.getlocal
+      @last_date = @date.to_date
+    else
+      @date = Time.now
+      @last_date = @date.to_date
+    end
     @unread = {total: 0, chat_room: 0}
-    params[:url].match(/\/chat_rooms\/#{@message.chat_room.id}/)? @path = true : @path = false
+    params[:url].match(/\/chat_rooms\/#{@message.chat_room.id}/) ? @path = true : @path = false
     if @path
       ChatRoomsUser.where(user_id: current_user.id, chat_room_id: @message.chat_room.id).update(unread: 0)
     end
@@ -25,6 +33,7 @@ class MessagesController < ApplicationController
   # GET /messages/1
   # GET /messages/1.json
   def show
+    p 'a'
   end
 
   # GET /messages/new
@@ -58,7 +67,8 @@ class MessagesController < ApplicationController
     end
     ActionCable.server.broadcast 'messages',
                                  users: users,
-                                 chat_room_id: params[:chat_room_id]
+                                 chat_room_id: params[:chat_room_id],
+                                 message_id: message.id
     head :ok
   end
 
@@ -90,12 +100,6 @@ class MessagesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_message
     @message = Message.find(params[:id])
-  end
-
-  def set_last_date
-    @last_date = Date.today
-    @date = Date.today
-    @first = true
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
